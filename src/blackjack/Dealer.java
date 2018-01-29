@@ -36,9 +36,9 @@ public class Dealer {
 		getPlayerBets();
 		setupDealer();
 		for(PlayerState p : playerStates) {
-			dealPlayer(p);
+			dealPlayer(p, null);
 		}
-		dealPlayer(dealerState);
+		dealPlayer(dealerState, dealerState.firstHand());
 		handler.onDealerResults(dealerState.firstHand());
 		for(PlayerState p : playerStates) {
 			handlePlayerResults(p);
@@ -86,10 +86,14 @@ public class Dealer {
 		}
 	}
 	
-	private void dealPlayer(PlayerState pState) {
+	/*
+	 * deals player cards according to player actions. Uses optional starting hand
+	 */
+	private void dealPlayer(PlayerState pState, Hand startingHand) {
 		HandState firstHandInfo = new HandState();
 		firstHandInfo.currentBet = pState.currentInitialBet;
-		firstHandInfo.hand = new Hand(Arrays.asList(drawCard(), drawCard()));
+		firstHandInfo.hand = startingHand == null ? new Hand(Arrays.asList(drawCard(), drawCard())) : startingHand;
+		
 		pState.hands = Arrays.asList(firstHandInfo);
 		for(int i = 0; i < pState.hands.size(); i++) { //we may append new handInfo objects as we split
 			HandState handInfo = pState.hands.get(i);
@@ -155,17 +159,19 @@ public class Dealer {
 				playerState.cash -= handState.currentBet;
 				Card firstCard = handState.hand.get(0);
 				Card secondCard = handState.hand.get(1);
+				
+				//modify current hand
 				handState.hand = new Hand(Arrays.asList(firstCard), true, 1);
 				
+				//add new hand
 				HandState otherHandState = new HandState();
 				otherHandState.currentBet = handState.currentBet;
 				otherHandState.hand = new Hand(Arrays.asList(secondCard), true, 2);
-				
 				ArrayList<HandState> newHandInfos = new ArrayList<>(playerState.hands);
 				newHandInfos.add(otherHandState);
 				playerState.hands = newHandInfos;
-				playerState.player.onSplit(handState.hand, otherHandState.hand);
 				
+				playerState.player.onSplit(handState.hand, otherHandState.hand);
 			}
 		}
 	}

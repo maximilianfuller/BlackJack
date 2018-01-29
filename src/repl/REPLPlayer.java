@@ -118,7 +118,7 @@ public class REPLPlayer implements IPlayer{
 	
 	protected int readBetAmount() {
 		try {
-			return Integer.valueOf(REPL.readLine());
+			return Integer.valueOf(REPL.readLine().replace("$", ""));
 		} catch (NumberFormatException e) {
 			return 0;
 		}
