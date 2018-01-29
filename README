@@ -1,0 +1,4 @@
+TO RUN:
+java -jar blackjack.jar
+
+repl blackjack implementation without surrender or insurance. Code is modular and can allow for arbitrary implementations of the player (an example is the robot player, created by naming a player with the string 'robot' in it, which takes random actions and 1 dollar bets). Current implementation does not allow resplitting but code could easily change to allow this.
